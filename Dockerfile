@@ -5,3 +5,5 @@ RUN apk update && \
 RUN cabal update && \
     cabal install pandoc
 RUN apk del --purge build-deps
+RUN apk add gmp libffi
+RUN ln -s /root/.cabal/bin/pandoc /usr/local/bin/
