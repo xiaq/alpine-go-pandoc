@@ -1,16 +1,16 @@
-FROM golang:1-alpine
+FROM alpine as builder
 
+# Build-time dependencies.
 RUN apk update && \
-    apk add --virtual build-deps musl-dev zlib-dev ghc cabal wget
+    apk add musl-dev zlib-dev ghc cabal wget
 
 # Ignore "createSymbolicLink: does not exist"
 RUN cabal update && \
     cabal install --prefix /usr/local pandoc || \
     echo Ignoring error
 
-RUN rm -r /root/.cabal && \
-    apk del --purge build-deps
+FROM golang:1-alpine
 
-# Additional runtime dependencies. Weirdly, these are not needed to build
-# pandoc, but running pandoc without them will complain about missing library.
-RUN apk add gmp libffi
+COPY --from=builder /usr/local /usr/local
+# Runtime dependencies.
+RUN apk update && apk add gmp libffi
