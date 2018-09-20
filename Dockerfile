@@ -8,7 +8,9 @@ RUN cabal update && \
     cabal install --prefix /usr/local pandoc || \
     echo Ignoring error
 
-# RUN apk add gmp libffi
-
 RUN rm -r /root/.cabal && \
     apk del --purge build-deps
+
+# Additional runtime dependencies. Weirdly, these are not needed to build
+# pandoc, but running pandoc without them will complain about missing library.
+RUN apk add gmp libffi
